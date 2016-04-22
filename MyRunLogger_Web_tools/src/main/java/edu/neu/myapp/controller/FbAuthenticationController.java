@@ -78,7 +78,7 @@ public class FbAuthenticationController {
 			userSession.setAttribute("user", user);
 			// Populate Runs
 			try {
-				ArrayList<RunLog> userRuns = (ArrayList<RunLog>)runLogDAO.getUserRuns();
+				ArrayList<RunLog> userRuns = (ArrayList<RunLog>) runLogDAO.getUserRuns();
 				model.addAttribute("userRuns", userRuns);
 			} catch (MyAppException e) {
 				model.addAttribute("nouserrun", "No User Run to Populate");
@@ -90,22 +90,10 @@ public class FbAuthenticationController {
 
 		return "home";
 	}
-
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
 		logger.info("Welcome home! The client locale is {}.", locale);
-		System.out.println("In Home");
-		// Date date = new Date();
-		// DateFormat dateFormat =
-		// DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG,
-		// locale);
-		//
-		// String formattedDate = dateFormat.format(date);
-		//
-		// model.addAttribute("serverTime", formattedDate );
-
 		return "index";
-		// return "addUserForm";
 	}
 
 }
