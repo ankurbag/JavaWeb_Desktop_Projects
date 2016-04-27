@@ -25,9 +25,9 @@
 	<!--<div class="content">-->
 	<div class="login">
 		<h1>
-			<span style="color: #4285F4; font-style: italic;"><em>MyRun</em></span><span
-				style="color: red">Logger</span>
-		</h1>
+			<center><span style="font-family:'Open Sans', Arial; font-weight:bold; font-size:40px">
+                    <font color="#4285F4">My</font><font color="#FCBD05">Run</font><font color="#EB584C">Logger</font></span></center>
+			</h1>
 		<form method='GET' action=''>
 			<%--
 	<input type="text" name="user" placeholder="User Name" value="Username" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'User Name';}" pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{3,20}$" required="required"/>
@@ -43,9 +43,10 @@
 	 --%>
 
 			<div style="margin-top: 10%; margin-bottom: 10%">
-				<label class="hvr-sweep-to-bottom"> <!-- <input type="submit"
+				<label > <!-- <input type="submit"
 					class="uibutton large" value="Connect with facebook" /> -->
-					<a class="uibutton large" href="<%=fbConnection.getFBAuthUrl()%>">Connect with facebook </a>
+					<a href="<%=fbConnection.getFBAuthUrl()%>"><img src="resources/images/connect-with-facebook.png"
+                alt="Log In With Facebook" title="Log In With Facebook"/></a>
 				</label>
 			</div>
 		</form>

@@ -8,8 +8,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.JoinColumn;	
 
 @Entity
 @Table(name = "user")
@@ -45,6 +48,18 @@ public class User {
 	@OneToMany (fetch=FetchType.EAGER, mappedBy="user",cascade = CascadeType.ALL)
 	private Set<RunLog> userRuns = new HashSet<RunLog>();
 	
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
+	private Set<TrophyBean> trophies = new HashSet<TrophyBean>(0);
+
+	
+	public Set<TrophyBean> getTrophies() {
+		return trophies;
+	}
+
+	public void setTrophies(Set<TrophyBean> trophies) {
+		this.trophies = trophies;
+	}
+
 	public Set getUserRuns() {
 		return userRuns;
 	}
@@ -85,9 +100,21 @@ public class User {
 
 	}
 
-	public User(String name, String password) {
+	
+
+	public User(long personID, String firstName, String lastName, String name, String password, String email,
+			String username, String profilePictureURI, Set<RunLog> userRuns, Set<TrophyBean> trophies) {
+		super();
+		this.personID = personID;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.name = name;
 		this.password = password;
+		this.email = email;
+		this.username = username;
+		this.profilePictureURI = profilePictureURI;
+		this.userRuns = userRuns;
+		this.trophies = trophies;
 	}
 
 	public long getPersonID() {

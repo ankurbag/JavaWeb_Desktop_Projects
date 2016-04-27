@@ -1,10 +1,14 @@
 package edu.neu.myapp.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
 
 import edu.neu.myapp.exceptions.MyAppException;
+import edu.neu.myapp.pojo.TrophyBean;
 import edu.neu.myapp.pojo.User;
 
 public class UserDAO extends DAO {
@@ -40,12 +44,25 @@ public class UserDAO extends DAO {
 		}
 	}
 
+	public List<User> getUserList() throws MyAppException {
+		List<User> userList = null;
+		try {
+			begin();
+			Query q = getSession().createQuery("from User");
+			userList = q.list();
+			commit();
+			return userList;
+		} catch (HibernateException e) {
+			rollback();
+			throw new MyAppException("Could not get user " + userList, e);
+		}
+	}
 	public User create(long personID, String username, String emailId, String firstName, String lastName,
-			String profilePictureURI) throws MyAppException {
+			String profilePictureURI,ArrayList<TrophyBean> trophies) throws MyAppException {
 		try {
 			begin();
 			System.out.println("inside DAO");
-
+			
 			// Email email=new Email(emailId);
 			User user = new User();
 			user.setPersonID(personID);
@@ -55,7 +72,13 @@ public class UserDAO extends DAO {
 			user.setEmail(emailId);
 			user.setProfilePictureURI(profilePictureURI);
 			/* email.setUser(user); */
-
+			for(TrophyBean trophy : trophies){
+				//if(totalDistance >= trophy.getAchievement()) {
+					user.getTrophies().add(trophy);
+					//userDAO.updateUser(user);
+				//}
+			}
+			
 			getSession().save(user);
 
 			commit();

@@ -29,6 +29,9 @@ public class TrophyController {
 	// private void initBinder(WebDataBinder binder) {
 	// binder.setValidator(validator);
 	// }
+	public String callDefaultPage(){
+		return "adminlogin";
+	}
 	public String createJSONObject(List<TrophyBean> trophyDetails) {
 		String message;
 		JSONObject json = new JSONObject();
@@ -89,6 +92,7 @@ public class TrophyController {
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br = req.getReader();
 		String str = null;
+		try{
 		while ((str = br.readLine()) != null) {
 			sb.append(str);
 		}
@@ -114,6 +118,9 @@ public class TrophyController {
 		// res.getWriter().write(
 		// createJSONObject(trophyDAO.getTrophyDetails())); add complete List
 		res.getWriter().write(createJSONObject(trophyBean));
+		}catch(Exception ex){
+			callDefaultPage();
+		}
 	}
 
 	@RequestMapping(value = "/updatetrophy.htm", method = RequestMethod.GET)
@@ -132,13 +139,17 @@ public class TrophyController {
 			if(updateCnt>0){
 				res.getWriter().write( "Trophy "+trophyBean.getTrophyName() +" Successfully Updated");
 			}else{
-				res.getWriter().write( "Sorry :Trophy "+trophyBean.getTrophyName() +" could not be updated");
+				res.getWriter().write( "Error");
 			}
 			
 		} catch (MyAppException e) {
 			System.out.println(e.getMessage());
-			model.addAttribute("msg", "Error Occured!!");
-			res.getWriter().write( "Sorry :Error Occured!!");
+			model.addAttribute("msg", "Error");
+			res.getWriter().write( "Error");
+		}catch(Exception ex){
+			res.getWriter().write( "Error");
+			callDefaultPage();
+			
 		}
 	}
 	
@@ -163,7 +174,14 @@ public class TrophyController {
 			System.out.println(e.getMessage());
 			model.addAttribute("msg", "Error Occured!!");
 			res.getWriter().write( "Sorry :Error Occured!!");
+		}catch (Exception ex){
+			callDefaultPage();
 		}
+	}
+	@RequestMapping(value = "/deletetrophy.htm", method = RequestMethod.GET)
+	protected String doDefaultActionOnDelete(HttpServletRequest req, HttpServletResponse res, Model model)
+			throws Exception {
+		return callDefaultPage();
 	}
 
 	@RequestMapping(value = "/addtrophy.htm", method = RequestMethod.GET)
@@ -175,6 +193,8 @@ public class TrophyController {
 		} catch (MyAppException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (Exception ex){
+			callDefaultPage();
 		}
 		return "admintrophy";
 

@@ -61,19 +61,16 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 	<nav class="navbar navbar-inverse">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#">MyRunLogger</a>
+				<a class="navbar-brand" href="adminhome.htm">MyRunLogger</a>
 			</div>
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="admin.htm">Home</a></li>
-				<li><a href="addtrophy.htm">Trophy</a></li>
-				<li><a href="#">Achievements</a></li>
-
+				<li ><a href="adminhome.htm">Home</a></li>
+				<li class="active"><a href="addtrophy.htm">Trophy</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#"><img src="resources/images/adminicon.png"
-						height="50"></a></li>
-				<li><a href="#">Admin</a></li>
-				<li><a onclick="logout()">Logout</a></li>
+				<li><a href="adminhome.htm"><img src="resources/images/adminicon.png" height="29"></a></li>
+				<li><a href="adminhome.htm">Admin</a></li>
+				<li><a href="adminlogout.htm">Logout</a></li>
 			</ul>
 		</div>
 	</nav>
@@ -87,8 +84,8 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 			<div class="row ">
 				<div class="col-md-10">
 					<!-- Add Trophy  -->
-					<div class="panel panel-default">
-						<div class="panel-heading">ADD TROPHY</div>
+					<div class="panel panel-info">
+						<div class="panel-heading"><strong>ADD TROPHY</strong></div>
 						<div class="panel-body">
 							<div>
 								<form ng-submit="sendPost()" class="form">
@@ -154,13 +151,12 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 					</div>
 					<!-- End : Add Trophy -->
 					<!-- TROPHY LIST -->
-					<div class="panel panel-default">
-						<div class="panel-heading">TROPHY IN THE STORE</div>
+					<div class="panel panel-info">
+						<div class="panel-heading"><strong>TROPHY IN THE STORE</strong></div>
 						<div class="panel-body">
 							<!-- <div ng-controller="myCtrl"> -->
-							<div class="alert-success alerttrophy">
-                               <h5 id="result">
-                               </h2>
+							<div class="alert-success alerttrophy" id="result">
+                               
                             </div>
 							<table class="table table-hover">
 								<thead>
@@ -224,7 +220,6 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 		
 		/** Update **/
 		$(document).on("click", ".btn-info", function() {
-			alert("Update Click");
 			var dsbutton = $(this);
 			var $row = dsbutton.closest("tr");
 			var trophyId = $row.children('td.trophyId').text();
@@ -251,11 +246,20 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 					 jQuery.ajax({
 	                        url: query,
 	                        success: function (result) {
-	                        	dsbutton.text("Update");
-	                        	alert(result);
-	                        	$(".alerttrophy").show();
-	                        	$("#result").empty().append(result);
-	                        	$row.css("background-color", "#B3FF80");
+	                        	
+	                        	if(result === 'Error'){
+	                        		alert("Some error occurred");
+                        			$("#result").empty().append("Some error occurred");
+                        			$.each($tds, function () {             
+                   	                 $(this).removeAttr("readonly");
+                   	                 $(this).removeClass("readonlyStyle");
+                   	             });
+                        		}else{
+	                        		dsbutton.text("Update");
+	                        		$(".alerttrophy").show();
+		                        	$("#result").empty().append(result);
+		                        	$row.css("background-color", "#B3FF80");
+	                        	}
 	                        },
 	                        error: function(XMLHttpRequest, textStatus, errorThrown) {
 	           			     alert("Update Trophy failed");
@@ -267,12 +271,10 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 		});
 		/**Delete Btn **/
 		$(document).on("click", ".btn-danger", function() {
-			alert("Delete Click");
 			var dsbutton = $(this);
 			var $row = dsbutton.closest("tr");
 			var trophyId = $row.children('td.trophyId').text();
 			var parentTr =$(this).parent().parent();
-			alert(parentTr);
 			jQuery.ajax({
 				  type: "POST",
 				  dataType: "html",

@@ -36,7 +36,9 @@ public class LogUserRunController {
 //	private void initBinder(WebDataBinder binder) {
 //		binder.setValidator(validator);
 //	}
-
+	public String callDefaultPage(){
+		return "index";
+	}
 	public String createJSONObject(RunLog runLog) {
 		String message;
 		JSONObject json = new JSONObject();
@@ -80,21 +82,25 @@ public class LogUserRunController {
 		System.out.println("runLogId : " +req.getParameter("runLogId"));
 		try {
 			runLog.setId(Long.parseLong(req.getParameter("runLogId")));
-			runLog.setRunDate(req.getParameter("runDateTxt"));
+			//runLog.setRunDate(req.getParameter("runDateTxt"));
             runLog.setDistance(Long.parseLong(req.getParameter("distanceTxt")));
             runLog.setRunTime(Long.parseLong(req.getParameter("runTimeTxt")));
             runLog.setFeedback(req.getParameter("feedbackTxt"));
             updateCnt =runLogDAO.updateRunDetails(runLog) ;
 			if(updateCnt>0){
-				res.getWriter().write( "Run for "+runLog.getRunDate() +" Successfully Updated");
+				res.getWriter().write( "Run for "+runLog.getId() +" Successfully Updated");
 			}else{
-				res.getWriter().write( "Sorry :Run for "+runLog.getRunDate() +" could not be updated");
+				res.getWriter().write( "Sorry :Run for "+runLog.getId() +" could not be updated");
 			}
 			
 		} catch (MyAppException e) {
 			System.out.println(e.getMessage());
 			model.addAttribute("msg", "Error Occured!!");
-			res.getWriter().write( "Sorry :Error Occured!!");
+			res.getWriter().write( "Error");
+		}catch(Exception Ex){
+			res.getWriter().write( "Error");
+			callDefaultPage();
+			
 		}
 	}
 	
@@ -116,9 +122,9 @@ public class LogUserRunController {
 			if(runLog!=null){
 				updateCnt = runLogDAO.delete(runLog);
 				if(updateCnt>0){
-				res.getWriter().write( "Run for "+runLog.getRunDate() +" Successfully Deleted");
+				res.getWriter().write( "Run for "+runLog.getId() +" Successfully Deleted");
 				}else{
-					res.getWriter().write( "Sorry :Run for "+runLog.getRunDate()  +" could not be deleted");
+					res.getWriter().write( "Sorry :Run for "+runLog.getId()  +" could not be deleted");
 				}
 				
 			}else{
@@ -130,6 +136,10 @@ public class LogUserRunController {
 			model.addAttribute("msg", "Error Occured!!");
 			res.getWriter().write( "Sorry :Error Occured!!");
 		}
+	}
+	@RequestMapping(value = "/deleterun.htm", method = RequestMethod.GET)
+	protected String doDefaultActionOnDelete(HttpServletRequest req,HttpServletResponse res,Model model) throws Exception {
+			return callDefaultPage();
 	}
 	
 	@RequestMapping(value="/logrun.htm",method = RequestMethod.POST)
@@ -155,7 +165,7 @@ public class LogUserRunController {
 		//Insert into RunLog
 		try {
             RunLogDAO runLogDAO = new RunLogDAO();
-            runLog.setRunDate(runDate.substring(1, runDate.indexOf('T')));
+            runLog.setRunDate(runDate.substring(0, runDate.indexOf('T')));
             runLog.setDistance(Long.parseLong(distance));
             runLog.setRunTime(Long.parseLong(runTime));
             runLog.setFeedback(feedback);
@@ -194,15 +204,21 @@ public class LogUserRunController {
 		HttpSession userSession = req.getSession();
 		RunLogDAO runLogDAO = new RunLogDAO();
 		User user= (User)userSession.getAttribute("user");
+		try {
 		model.addAttribute("name", user.getName());
 		model.addAttribute("email", user.getEmail());
 		model.addAttribute("profile", user.getProfilePictureURI());
-		try {
-			ArrayList<RunLog> userRuns = (ArrayList<RunLog>) runLogDAO.getUserRuns();
+		
+			ArrayList<RunLog> userRuns = (ArrayList<RunLog>) runLogDAO.getUserRuns(user.getPersonID());
 			model.addAttribute("userRuns", userRuns);
+			return "logrun";
 		} catch (MyAppException e) {
 			model.addAttribute("nouserrun", "No User Run to Populate");
+			return "logrun"; 
+		}catch(Exception ex){
+			callDefaultPage();
+			return "index";
 		}
-		return "logrun";
+		
 	}
 }

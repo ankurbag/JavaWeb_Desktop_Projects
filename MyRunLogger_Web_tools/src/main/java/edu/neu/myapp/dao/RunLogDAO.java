@@ -2,8 +2,12 @@ package edu.neu.myapp.dao;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 
 import edu.neu.myapp.exceptions.MyAppException;
 import edu.neu.myapp.pojo.RunLog;
@@ -40,6 +44,29 @@ public class RunLogDAO extends DAO {
 			throw new MyAppException("Could not get user Runs");
 		}
 	}
+	
+	public List <RunLog> getLeaderBoard() throws MyAppException {
+		try {
+			begin();
+			//String hql = "Select user.firstName+' '+user.lastName, sum(distance) total from RunLog group by user order by total ";
+			//Query q = getSession().createQuery(hql);
+			//List leaderList = q.list();
+			List <RunLog>leaderList = getSession().createCriteria(RunLog.class)
+					.createAlias("user", "u")
+					 .setProjection( Projections.projectionList()
+				        .add( Projections.sum("distance"), "totalDistance" )
+				        .add( Projections.groupProperty("u.name"))
+				    )
+				    .addOrder( Order.desc("totalDistance") )
+				    .list();
+			commit();
+			//return userruns;
+			return leaderList;
+		} catch (HibernateException e) {
+			rollback();
+			throw new MyAppException("Could not get user Runs");
+		}
+	}
 
 	public RunLog getRunLog(long runLogId) throws MyAppException {
 		try {
@@ -59,10 +86,8 @@ public class RunLogDAO extends DAO {
 		int result = 0;
 		try {
 			begin();
-			Query q = getSession().createQuery("UPDATE RunLog set runDate = :runDate"
-					+ ",runTime = :runTime ,distance = :distance,feedback = :feedback where id = :id");
+			Query q = getSession().createQuery("UPDATE RunLog set runTime = :runTime ,distance = :distance,feedback = :feedback where id = :id");
 			q.setParameter("id", runLog.getId());
-			q.setParameter("runDate", runLog.getRunDate());
 			q.setParameter("runTime", runLog.getRunTime());
 			q.setParameter("distance", runLog.getDistance());
 			q.setParameter("feedback", runLog.getFeedback());

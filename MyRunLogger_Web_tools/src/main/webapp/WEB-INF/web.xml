@@ -20,4 +20,39 @@
     <servlet-name>appServlet</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
+  <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>
+               SecuredSite
+            </web-resource-name>
+            <url-pattern>/fbhome</url-pattern>
+            <url-pattern>/admin.htm</url-pattern>
+            <url-pattern>/adminhome.htm</url-pattern>
+            <url-pattern>/addtrophy.htm</url-pattern>
+            <url-pattern>/updatetrophy.htm</url-pattern>
+            <url-pattern>/deletetrophy.htm</url-pattern>
+            <url-pattern>/userachievements.htm</url-pattern>
+            <url-pattern>/logrun.htm</url-pattern>
+            <url-pattern>/deleterun.htm</url-pattern>
+            <url-pattern>/updaterun.htm</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>
+            Let only managers use this app
+            </description>
+            <role-name>manager-gui</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-role>
+  	   <role-name>manager-gui</role-name>
+    </security-role>
+    <login-config>
+      <auth-method>FORM</auth-method>
+      <form-login-config>
+        <form-login-page>/WEB-INF/views/login.jsp</form-login-page>
+        <form-error-page>/WEB-INF/views/error_login.jsp</form-error-page>
+      </form-login-config>
+    </login-config>
 </web-app>

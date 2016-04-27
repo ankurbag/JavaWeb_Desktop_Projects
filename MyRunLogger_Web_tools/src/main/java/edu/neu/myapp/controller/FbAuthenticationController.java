@@ -1,5 +1,6 @@
 package edu.neu.myapp.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -12,17 +13,20 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.neu.myapp.dao.RunLogDAO;
+import edu.neu.myapp.dao.TrophyDAO;
 import edu.neu.myapp.dao.UserDAO;
 import edu.neu.myapp.exceptions.MyAppException;
 import edu.neu.myapp.fbsocial.FBConnection;
 import edu.neu.myapp.fbsocial.FBGraph;
 import edu.neu.myapp.pojo.RunLog;
+import edu.neu.myapp.pojo.TrophyBean;
 import edu.neu.myapp.pojo.User;
 
 /**
@@ -58,10 +62,15 @@ public class FbAuthenticationController {
 		Map<String, String> fbProfileData = fbGraph.getGraphData(graph);
 		ServletOutputStream out;
 		HttpSession userSession = req.getSession();
+		userSession.setAttribute("accesscode", accessToken);
 		try {
 			System.out.print("test");
 			UserDAO userDao = new UserDAO();
 			RunLogDAO runLogDAO = new RunLogDAO();
+			TrophyDAO trophyDAO = new TrophyDAO();
+			
+			ArrayList<TrophyBean> trophies = 
+					(ArrayList<TrophyBean>)trophyDAO.getTrophyDetails();
 			System.out.print("test1");
 			// Search User in the Db
 			// if present in the DB go to Home
@@ -69,7 +78,7 @@ public class FbAuthenticationController {
 			User user = userDao.getUser(userId);
 			if (user == null) {
 				user = userDao.create(userId, fbProfileData.get("name"), fbProfileData.get("email"),
-						fbProfileData.get("first_name"), fbProfileData.get("last_name"), fbProfileData.get("profile"));
+						fbProfileData.get("first_name"), fbProfileData.get("last_name"), fbProfileData.get("profile"),trophies);
 
 			}
 			model.addAttribute("name", fbProfileData.get("name"));
@@ -79,6 +88,8 @@ public class FbAuthenticationController {
 			// Populate Runs
 			try {
 				ArrayList<RunLog> userRuns = (ArrayList<RunLog>) runLogDAO.getUserRuns();
+				ArrayList<RunLog> leadersRuns = (ArrayList<RunLog>) runLogDAO.getLeaderBoard();
+				model.addAttribute("leadersRuns",leadersRuns);
 				model.addAttribute("userRuns", userRuns);
 			} catch (MyAppException e) {
 				model.addAttribute("nouserrun", "No User Run to Populate");
@@ -90,7 +101,27 @@ public class FbAuthenticationController {
 
 		return "home";
 	}
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	
+	@RequestMapping(value = "/logout.htm", method = RequestMethod.GET)
+	public String logout(Locale locale, Model model,HttpServletRequest req,HttpServletResponse res) {
+		logger.info("Welcome home! The client locale is {}.", locale);
+		//FBConnection fbConnection = new FBConnection();
+		HttpSession session=req.getSession();
+		//String accessToken = (String)session.getAttribute("accesscode");
+		//String url = fbConnection.getLogOutURL(accessToken);
+		//try {
+			  
+            session.invalidate();  
+			//res.sendRedirect(url);
+			//return;
+		//} catch (IOException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
+		return "index";
+	}
+	
+	@RequestMapping(value = {"/","/index.htm"}, method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
 		logger.info("Welcome home! The client locale is {}.", locale);
 		return "index";

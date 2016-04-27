@@ -14,5 +14,6 @@
 
 		<mapping class="edu.neu.myapp.pojo.User" />
 		<mapping class="edu.neu.myapp.pojo.RunLog" />
+		<mapping class="edu.neu.myapp.pojo.TrophyBean" />
 	</session-factory>
 </hibernate-configuration>

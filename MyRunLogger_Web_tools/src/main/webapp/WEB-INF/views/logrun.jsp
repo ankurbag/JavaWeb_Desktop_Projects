@@ -25,7 +25,6 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
     $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8";
      
     $scope.sendPost = function() {
-    	alert("HI");
         $http({
             url : 'logrun.htm',
             method : "POST",
@@ -63,36 +62,55 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 <c:set var="user" value="${session.user}" />
 <jsp:scriptlet>FBConnection fbConnection = new FBConnection();</jsp:scriptlet>
 	
-	<nav class="navbar navbar-inverse">
+	<div id="fb-root"></div>
+	<script>
+		window.fbAsyncInit = function() {
+		    FB.init({
+		      appId      : '1524813154490050', // App ID
+		      status     : true, // check login status
+		      cookie     : true, // enable cookies to allow the server to access the session
+		      oauth      : true, // enable OAuth 2.0
+		      xfbml      : true  // parse XFBML
+		    });
+
+		    // Additional initialization code here
+		  };
+
+		  // Load the SDK Asynchronously
+		  (function(d){
+		     var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+		     js = d.createElement('script'); js.id = id; js.async = true;
+		     js.src = "http://connect.facebook.net/en_US/all.js";
+		     d.getElementsByTagName('head')[0].appendChild(js);
+		   }(document));
+		
+	</script>
+	<nav class="navbar navbar-inverse" >
 		<div class="container-fluid">
-			<div class="navbar-header">
+			<div class="navbar-header" >
 				<a class="navbar-brand" href="#">MyRunLogger</a>
 			</div>
 			<ul class="nav navbar-nav">
-				<li><a href="<%=fbConnection.getFBAuthUrl()%>">Home</a></li>
+				<li ><a href="<%=fbConnection.getFBAuthUrl()%>">Home</a></li>
 				<li class="active"><a href="logrun.htm">Log a run</a></li>
-				<li><a>My runs</a></li>
+				<li><a href="userachievements.htm">My runs</a></li>
 
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#"><img src="${profile}" height="50"></a></li>
-				<li><a href="#">${name}</a></li>
-				<li><a onclick="logout()">Logout</a></li>
+				<li><a href="<%=fbConnection.getFBAuthUrl()%>"><img class="img-circle" src="${profile}" height="27"></a></li>
+				<li><a href="<%=fbConnection.getFBAuthUrl()%>">${name}</a></li>
+				<li><a href="logout.htm" onclick="FB.logout(function(response){});" >Logout</a></li>
 			</ul>
 		</div>
 	</nav>
 
 	<div class="container" ng-controller="myCtrl">
-		<!-- <h2>Panel Group</h2>
-		<p>The panel-group class clears the bottom-margin. Try to remove
-			the class and see what happens.</p> -->
-
 		<div class="panel-group">
 			<div class="row ">
 				<div class="col-md-12">
 					<!-- Add Trophy  -->
-					<div class="panel panel-default">
-						<div class="panel-heading">LOG A RUN</div>
+					<div class="panel panel-info">
+						<div class="panel-heading"><strong>LOG A RUN</strong></div>
 						<div class="panel-body">
 							<div>
 								<form ng-submit="sendPost()" class="form">
@@ -102,7 +120,7 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 									</div>
 									<div class="row">
 										<div class="col-md-2"></div>
-										<div class="form-group col-md-8">
+										<div class="form-group col-md-4">
 											<label for="runDate">Date:</label> <input type="date"
 												ng-model="runDate" required="required"
 												class="form-control"
@@ -111,17 +129,12 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 									
 											color="red"><form:errors path="password" /></font> --%>
 										</div>
-										<div class="col-md-2"></div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-2"></div>
-										<div class="form-group col-md-8">
+										<div class="form-group col-md-4">
 											<label for="runTime">Time:</label> <input
 												type="number" ng-model="runTime" size="30"
 												required class="form-control"
-												min="1" max="100"
-												placeholder="Enter time you run" />
+												min="1" max="1000"
+												placeholder="Enter time you run in minutes" />
 											
 											<%-- <font
 											color="red"><form:errors path="password" /></font> --%>
@@ -131,20 +144,16 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 
 									<div class="row">
 										<div class="col-md-2"></div>
-										<div class="form-group col-md-8">
+										<div class="form-group col-md-4">
 											<label for="distance">Distance:</label> <input
 												type="number" ng-model="distance" size="30"
 												required="required" class="form-control"
-												placeholder="Enter the miles" />
+												placeholder="Enter the miles"
+												min="1" max="1000" />
 											<%-- <font
 											color="red"><form:errors path="password" /></font> --%>
 										</div>
-										<div class="col-md-2"></div>
-									</div>
-									
-									<div class="row">
-										<div class="col-md-2"></div>
-										<div class="form-group col-md-8">
+										<div class="form-group col-md-4">
 											<label for="achievement">Felt:</label> <input
 												type="text" ng-model="feedback" size="30"
 												required="required" class="form-control"
@@ -154,7 +163,6 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 										</div>
 										<div class="col-md-2"></div>
 									</div>
-									
 									<div class="row">
 										<div class="col-md-2"></div>
 										<div class="form-group col-md-8">
@@ -183,13 +191,12 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 					</div>
 					<!-- End : Add Trophy -->
 					<!-- TROPHY LIST -->
-					<div class="panel panel-default">
-						<div class="panel-heading">MY RUNS</div>
+					<div class="panel panel-info">
+						<div class="panel-heading"><strong>MY RUNS</strong></div>
 						<div class="panel-body">
 							<!-- <div ng-controller="myCtrl"> -->
-							<div class="alert-success alerttrophy">
-                               <h5 id="result">
-                               </h2>
+							<div class="alert-success alerttrophy" id="result">
+                               
                             </div>
 							<table class="table table-hover">
 								<thead>
@@ -207,8 +214,7 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 										<c:forEach var="userRun" items="${userRuns}">
 											<tr>
 												<td class="runLogId">${userRun.id}</td>
-												<td><input name="runDateTxt" type="text" class="readonlyStyle" readonly
-													value="${userRun.runDate}" /></td>
+												<td>${userRun.runDate}</td>
 												<td><input name="distanceTxt" type="text" class="readonlyStyle" readonly
 													value="${userRun.distance}" /></td>
 												<td><input name="runTimeTxt" type="text" class="readonlyStyle" readonly
@@ -227,8 +233,7 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 
 									<tr ng-repeat="x in message">
 										<td class="runLogId">{{ x.runLogId }}</td>
-										<td><input name="runDateTxt" type="text" class="readonlyStyle" readonly
-													value="{{ x.runResultDate }}" /></td>
+										<td>{{ x.runResultDate }}</td>
 										<td><input name="distanceTxt" type="text" class="readonlyStyle" readonly
 													value="{{ x.runResultDistance }}" /></td>
 										<td><input name="runTimeTxt" type="text" class="readonlyStyle" readonly
@@ -259,7 +264,6 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 		
 		/** Update **/
 		$(document).on("click", ".btn-info", function() {
-			alert("Update Click");
 			var dsbutton = $(this);
 			var $row = dsbutton.closest("tr");
 			var runLogId = $row.children('td.runLogId').text();
@@ -286,15 +290,26 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 					 jQuery.ajax({
 	                        url: query,
 	                        success: function (result) {
-	                        	dsbutton.text("Update");
+	                        	
 	                        	alert(result);
 	                        	$(".alerttrophy").show();
-	                        	$("#result").empty().append(result);
-	                        	$row.css("background-color", "#B3FF80");
+                        		if(result === 'Error'){
+                        			$("#result").empty().append("Some error occurred");
+                        			$.each($tds, function () {             
+                   	                 $(this).removeAttr("readonly");
+                   	                 $(this).removeClass("readonlyStyle");
+                   	             });
+                        		}else{
+	                        		dsbutton.text("Update");
+	                        		$(".alerttrophy").show();
+		                        	$("#result").empty().append(result);
+		                        	$row.css("background-color", "#B3FF80");
+	                        	}
+	                        	
 	                        },
 	                        error: function(XMLHttpRequest, textStatus, errorThrown) {
-	           			     alert("Update Trophy failed");
-	           			  	 $("#result").empty().append("Update Trophy failed!!!");
+	           			     alert("Update Run failed");
+	           			  	 $("#result").empty().append("Update Run failed!!!");
 	           			  },
 	                        async: true
 	                    });
@@ -302,12 +317,10 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
 		});
 		/**Delete Btn **/
 		$(document).on("click", ".btn-danger", function() {
-			alert("Delete Click");
 			var dsbutton = $(this);
 			var $row = dsbutton.closest("tr");
 			var runLogId = $row.children('td.runLogId').text();
 			var parentTr =$(this).parent().parent();
-			alert(parentTr);
 			jQuery.ajax({
 				  type: "POST",
 				  dataType: "html",
